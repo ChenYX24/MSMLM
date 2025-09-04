@@ -1,0 +1,41 @@
+seed: 42
+
+paths:
+  llm_name_or_path: "/data1/chenyuxuan/Project/MSMLM/code/mol_sft/outputs/pretrain" 
+  output_dir: "/data1/chenyuxuan/Project/MSMLM/code/mol_sft/outputs/sft"
+  checkpoints:
+    diffusion: null                     
+    gnn: null
+    diff_mlp: null
+    gnn_mlp: null
+
+tokens:
+  mol_token: "<mol>"
+
+freeze:
+  llm: false
+  diffusion: true
+  gnn: false
+  diff_mlp: false
+  gnn_mlp: false
+
+train:
+  dataset_path: "/data1/lvchangwei/LLM/SFT_data/SFT_DATA.json"
+  max_seq_length: 512
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 16
+  learning_rate: 2e-5
+  num_train_epochs: 1
+  logging_steps: 10
+  save_steps: 1000
+  eval_steps: 1000
+  warmup_ratio: 0.03
+  bf16: true
+  gradient_checkpointing: true
+  packing: false           
+  lr_scheduler_type: "cosine"
+
+loss:
+  ce_weight: 1.0
+  diffusion_aux_weight: 0.0   
