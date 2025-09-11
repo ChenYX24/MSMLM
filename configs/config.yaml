@@ -1,0 +1,38 @@
+seed: 42
+
+paths:
+  llm_name_or_path: "/data1/chenyuxuan/Project/MSMLM/code/mol_sft/outputs/pretrain" 
+  output_dir: "/data1/lvchangwei/LLM/llama3.2-chem-sft-gnn/llm_gnn_nofreeze"
+  # 统一使用更清晰的命名，直接指向权重文件
+  gnn_state_dict_path: "/data1/lvchangwei/GNN/Project/GVP/checkpoints_256_wo/gvp_weights_best.pt"
+  # 我们之前的讨论中，mlp适配器是随训练的，如果需要预加载，可以添加：
+  # gnn_mlp_state_dict_path: null 
+  
+tokens:
+  mol_token: "<mol>"
+
+# 将冻结配置放到 train 下，更符合逻辑
+train:
+  dataset_path: "/data1/lvchangwei/LLM/SFT_data/SFT_DATA.json"
+  max_seq_length: 1024
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 8
+  learning_rate: 2e-5
+  num_train_epochs: 1
+  logging_steps: 10
+  save_steps: 1000
+  eval_steps: 1000
+  warmup_ratio: 0.03
+  bf16: true
+  gradient_checkpointing: true
+  packing: false
+  lr_scheduler_type: "cosine"
+  
+  # ★ 新增：控制模型部分的冻结
+  freeze_llm: false # 冻结LLM本体，一般为false
+  freeze_gnn: false # 冻结GNN编码器
+  freeze_mol_adapter: false # 冻结GNN到LLM的适配器
+  
+network:
+  proxy: "http://127.0.0.1:7890"
