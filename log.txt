@@ -1,0 +1,11 @@
+INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -c /tmp/tmpii36gfhq/test.c -o /tmp/tmpii36gfhq/test.o
+INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat /tmp/tmpii36gfhq/test.o -laio -o /tmp/tmpii36gfhq/a.out
+INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -c /tmp/tmpx9bwvgw4/test.c -o /tmp/tmpx9bwvgw4/test.o
+INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat /tmp/tmpx9bwvgw4/test.o -L/usr/local/cuda -L/usr/local/cuda/lib64 -lcufile -o /tmp/tmpx9bwvgw4/a.out
+INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -c /tmp/tmpy4y0gjnh/test.c -o /tmp/tmpy4y0gjnh/test.o
+INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat /tmp/tmpy4y0gjnh/test.o -laio -o /tmp/tmpy4y0gjnh/a.out
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CNC(=O)N1CC(OC2=CC=CC(F)=C2)C1: 'Sequential' object has no attrINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ing GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C#CC1=NCCN=CN1: 'Sequential' object has no attribute 'gvp_layer'
+ect has no attribute 'gvp_layer'

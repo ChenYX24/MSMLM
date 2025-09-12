@@ -17,6 +17,19 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 # ---------------- SwanLab ----------------
 swanlab.init(project="mol-sft-simple", experiment_name="exp-001", description="SFT with <mol> embedding-append", mode="online")
 
+import json
+
+def safe_to_str(x):
+    if x is None:
+        return ""
+    if isinstance(x, (list, tuple)):
+        # 把多段输入/输出合成多行
+        return "\n".join(safe_to_str(xx) for xx in x)
+    if isinstance(x, dict):
+        # 可读的 JSON
+        return json.dumps(x, ensure_ascii=False)
+    return str(x)
+
 class SwanLabCallback(TrainerCallback):
     def on_log(self, args, state, control, logs=None, **kwargs):
         if state.is_world_process_zero:
@@ -66,7 +79,7 @@ def main_worker(local_rank, world_size, cfg):
     llm = AutoModelForCausalLM.from_pretrained(
         llm_name,
         torch_dtype=torch.bfloat16 if cfg["train"]["bf16"] else torch.float32,
-    ).to(local_rank)
+    )
     # .to(local_rank if local_rank == 0 else torch.device("cpu"))  # LLM 放 GPU0
     
     llm.resize_token_embeddings(len(tokenizer))
@@ -95,18 +108,6 @@ def main_worker(local_rank, world_size, cfg):
         print(f"[{local_rank}] ✅ Loaded GVPEncoder")
 
     # ---------------- 模型并行 ----------------
-    # device_map = {
-    #     "llm": torch.device("cuda:0"),
-    #     "gvp_encoder": torch.device("cuda:1"),
-    #     "mol_adapter": torch.device("cuda:1"),
-    #     "diffusion_encoder": torch.device("cuda:0")
-    # }
-    # # 修改 MolAwareCausalLM 的 _first_device 方法
-    # model._first_device = lambda: device_map["llm"]
-    # model.gvp_encoder.to(device_map["gvp_encoder"])
-    # model.mol_adapter.to(device_map["mol_adapter"])
-    # model.diffusion_encoder.to(device_map["diffusion_encoder"])
-    
     # 冻结参数可选
     freeze_llm = cfg["train"].get("freeze_llm", False)
     freeze_gnn = cfg["train"].get("freeze_gnn", False)
@@ -121,21 +122,51 @@ def main_worker(local_rank, world_size, cfg):
 
     # ---------------- DDP 包装 ----------------
     # model = torch.nn.parallel.DistributedDataParallel(
-    #     model,
-    #     device_ids=[local_rank],
-    #     output_device=local_rank,
-    #     find_unused_parameters=True
+    #     model, device_ids=[local_rank], output_device=local_rank, find_unused_parameters=True
     # )
-
+    
+    # model = model.to(local_rank)
+    
     if local_rank == 0:
         trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
         total_params = sum(p.numel() for p in model.parameters())
         print(f"[{local_rank}] Trainable params: {trainable_params} / Total: {total_params}")
     # ---------------- 数据集 ----------------
     raw = load_dataset("json", data_files=cfg["train"]["dataset_path"])["train"]
+    # 设定一些 tokenizer 细节（放在 tokenizer 创建后）
+    tokenizer.model_max_length = int(cfg["train"]["max_seq_length"])
+    tokenizer.padding_side = "right"  # 一般右 padding 更稳
+    # 如果你的模型是 Llama/GLM 一类，这两句没副作用；pad_token 已在你的代码里处理
+
     def format_dataset(example):
-        return {"text": f"<|user|>{example['input'].strip()}<|assistant|>{example['output'].strip()}"}
+        user = safe_to_str(example.get("input", "")).strip()
+        assistant = safe_to_str(example.get("output", "")).strip()
+        return {"text": f"<|user|>{user}\n<|assistant|>{assistant}"}
+
     processed_dataset = raw.map(format_dataset, remove_columns=raw.column_names)
+    processed_dataset = processed_dataset.filter(lambda ex: isinstance(ex.get("text",""), str) 
+                                            and len(ex["text"].strip())>0 
+                                            and "<|assistant|>" in ex["text"])
+    # 过滤掉异常/空文本与超短样本
+    def is_valid(example):
+        t = example.get("text", "")
+        return isinstance(t, str) and len(t.strip()) > 0 and "<|assistant|>" in t
+
+    processed_dataset = processed_dataset.filter(is_valid)
+
+    # （可选）在小批样本上做一次“预 tokenization 检查”来提前暴露问题
+    def quick_tokenize_check(batch):
+        # 不写入数据集，仅用于 sanity check
+        _ = tokenizer(
+            batch["text"],
+            truncation=True,
+            max_length=int(cfg["train"]["max_seq_length"]),
+            padding=False,  # 这里只是检查，不需要 pad
+            return_attention_mask=True,
+        )
+        return batch
+    processed_dataset = processed_dataset.map(quick_tokenize_check, batched=True, batch_size=64)
+
     split = processed_dataset.train_test_split(test_size=0.05, seed=cfg["seed"])
 
     # ---------------- DataCollator ----------------
@@ -160,10 +191,13 @@ def main_worker(local_rank, world_size, cfg):
         bf16=cfg["train"]["bf16"],
         gradient_checkpointing=cfg["train"]["gradient_checkpointing"],
         gradient_checkpointing_kwargs={"use_reentrant": False},
+        remove_unused_columns=True,
         ddp_find_unused_parameters=True,
         report_to="none",
     )
 
+    if cfg["train"]["gradient_checkpointing"]:
+        llm.config.use_cache = False
     # ---------------- SFTTrainer ----------------
     trainer = SFTTrainer(
         model=model,
@@ -188,8 +222,8 @@ def main(cfg_path="configs/config.yaml"):
     local_rank = int(os.environ["LOCAL_RANK"])
     rank = int(os.environ["RANK"])
     world_size = int(os.environ["WORLD_SIZE"])
+    torch.cuda.set_device(local_rank)
     main_worker(local_rank, world_size, cfg)
-    # mp.spawn(main_worker, args=(world_size, cfg),nprocs=4, join=True)
 
 if __name__ == "__main__":
     main()

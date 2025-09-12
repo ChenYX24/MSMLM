@@ -9,6 +9,7 @@ import logging
 from .gnn import GVPEncoder, ATOM_TYPES
 from .mlp import MLPAdapter
 from .tools import extract_and_convert_online
+from transformers.modeling_outputs import CausalLMOutputWithPast
 
 # 禁用RDKit日志
 logging.getLogger("rdkit").setLevel(logging.ERROR)
@@ -178,11 +179,11 @@ class MolAwareCausalLM(nn.Module):
     # ---------- 前向（训练/评估） ----------
     def forward(
         self,
-        input_ids: Optional[torch.Tensor] = None,
-        attention_mask: Optional[torch.Tensor] = None,
-        labels: Optional[torch.Tensor] = None,
-        **kwargs,
-    ):
+        input_ids=None,
+        attention_mask=None,
+        labels=None,
+        **kwargs, 
+    ) -> CausalLMOutputWithPast:
         # 此方法与你原代码基本一致，但 _append_mol_embeds_to_end_offline
         # 将调用我们新定义的 _black_box_embed_offline
         assert input_ids is not None, "MolAwareCausalLM 需要 input_ids"
