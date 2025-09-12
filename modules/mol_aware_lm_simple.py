@@ -314,7 +314,7 @@ class MolAwareCausalLM(nn.Module):
             
         if not realtime_mol:
             # 非实时，走原始逻辑
-            return super().generate(
+            return self.llm.generate(
                 input_ids=input_ids,
                 attention_mask=attention_mask,
                 max_new_tokens=max_new_tokens,

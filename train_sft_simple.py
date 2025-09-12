@@ -11,7 +11,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, TrainingArguments,
 from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
 from modules.mol_aware_lm_simple import MolAwareCausalLM
 import swanlab
-
+import pdb
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # ---------------- SwanLab ----------------
@@ -43,8 +43,8 @@ def set_seed(seed):
 
 # ---------------- Main (DDP spawn) ----------------
 def main_worker(local_rank, world_size, cfg):
-    torch.cuda.set_device(local_rank)
-    dist.init_process_group(backend="nccl", init_method="env://", rank=local_rank, world_size=world_size)
+    # torch.cuda.set_device(local_rank)
+    # dist.init_process_group(backend="nccl", init_method="env://", rank=local_rank, world_size=world_size)
 
     set_seed(cfg["seed"] + local_rank)
 
@@ -66,8 +66,9 @@ def main_worker(local_rank, world_size, cfg):
     llm = AutoModelForCausalLM.from_pretrained(
         llm_name,
         torch_dtype=torch.bfloat16 if cfg["train"]["bf16"] else torch.float32,
-    ).to(local_rank if local_rank == 0 else torch.device("cpu"))  # LLM 放 GPU0
-
+    ).to(local_rank)
+    # .to(local_rank if local_rank == 0 else torch.device("cpu"))  # LLM 放 GPU0
+    
     llm.resize_token_embeddings(len(tokenizer))
     llm.config.vocab_size = len(tokenizer)
     llm.config.pad_token_id = tokenizer.pad_token_id
@@ -94,17 +95,17 @@ def main_worker(local_rank, world_size, cfg):
         print(f"[{local_rank}] ✅ Loaded GVPEncoder")
 
     # ---------------- 模型并行 ----------------
-    device_map = {
-        "llm": torch.device("cuda:0"),
-        "gvp_encoder": torch.device("cuda:1"),
-        "mol_adapter": torch.device("cuda:1"),
-        "diffusion_encoder": torch.device("cuda:0")
-    }
-    # 修改 MolAwareCausalLM 的 _first_device 方法
-    model._first_device = lambda: device_map["llm"]
-    model.gvp_encoder.to(device_map["gvp_encoder"])
-    model.mol_adapter.to(device_map["mol_adapter"])
-    model.diffusion_encoder.to(device_map["diffusion_encoder"])
+    # device_map = {
+    #     "llm": torch.device("cuda:0"),
+    #     "gvp_encoder": torch.device("cuda:1"),
+    #     "mol_adapter": torch.device("cuda:1"),
+    #     "diffusion_encoder": torch.device("cuda:0")
+    # }
+    # # 修改 MolAwareCausalLM 的 _first_device 方法
+    # model._first_device = lambda: device_map["llm"]
+    # model.gvp_encoder.to(device_map["gvp_encoder"])
+    # model.mol_adapter.to(device_map["mol_adapter"])
+    # model.diffusion_encoder.to(device_map["diffusion_encoder"])
     
     # 冻结参数可选
     freeze_llm = cfg["train"].get("freeze_llm", False)
@@ -119,18 +120,17 @@ def main_worker(local_rank, world_size, cfg):
         for p in model.mol_adapter.parameters(): p.requires_grad = False
 
     # ---------------- DDP 包装 ----------------
-    model = torch.nn.parallel.DistributedDataParallel(
-        model,
-        device_ids=[local_rank],
-        output_device=local_rank,
-        find_unused_parameters=True
-    )
+    # model = torch.nn.parallel.DistributedDataParallel(
+    #     model,
+    #     device_ids=[local_rank],
+    #     output_device=local_rank,
+    #     find_unused_parameters=True
+    # )
 
     if local_rank == 0:
         trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
         total_params = sum(p.numel() for p in model.parameters())
         print(f"[{local_rank}] Trainable params: {trainable_params} / Total: {total_params}")
-
     # ---------------- 数据集 ----------------
     raw = load_dataset("json", data_files=cfg["train"]["dataset_path"])["train"]
     def format_dataset(example):
@@ -185,8 +185,11 @@ def main_worker(local_rank, world_size, cfg):
 def main(cfg_path="configs/config.yaml"):
     with open(cfg_path, "r") as f:
         cfg = yaml.safe_load(f)
-    world_size = int(os.environ.get("WORLD_SIZE", 4))
-    mp.spawn(main_worker, args=(world_size, cfg), nprocs=world_size, join=True)
+    local_rank = int(os.environ["LOCAL_RANK"])
+    rank = int(os.environ["RANK"])
+    world_size = int(os.environ["WORLD_SIZE"])
+    main_worker(local_rank, world_size, cfg)
+    # mp.spawn(main_worker, args=(world_size, cfg),nprocs=4, join=True)
 
 if __name__ == "__main__":
     main()
