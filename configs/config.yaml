@@ -2,7 +2,7 @@ seed: 42
 
 paths:
   llm_name_or_path: "/data1/chenyuxuan/Project/MSMLM/code/mol_sft/outputs/pretrain" 
-  output_dir: "/data1/lvchangwei/LLM/llama3.2-chem-sft-gnn/llm_gnn_nofreeze"
+  output_dir: "/data1/chenyuxuan/Project/MSMLM/model/llama3.2-chem-sft-gnn/llm_gnn_nofreeze"
   # 统一使用更清晰的命名，直接指向权重文件
   gnn_state_dict_path: "/data1/lvchangwei/GNN/Project/GVP/checkpoints_256_wo/gvp_weights_best.pt"
   # 我们之前的讨论中，mlp适配器是随训练的，如果需要预加载，可以添加：
