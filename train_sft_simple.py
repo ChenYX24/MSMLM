@@ -55,7 +55,11 @@ def set_seed(seed):
         torch.cuda.manual_seed_all(seed)
 
 # ---------------- Main (DDP spawn) ----------------
-def main_worker(local_rank, world_size, cfg):
+def main_worker(world_size, cfg):
+    # 进 main_worker 开头（即便交给 Trainer DDP，也可以放）
+    local_rank = int(os.environ.get("LOCAL_RANK", 0))
+    torch.cuda.set_device(local_rank)
+    print(f"[rank {local_rank}] using cuda:{torch.cuda.current_device()}")
     # torch.cuda.set_device(local_rank)
     # dist.init_process_group(backend="nccl", init_method="env://", rank=local_rank, world_size=world_size)
 
@@ -79,7 +83,7 @@ def main_worker(local_rank, world_size, cfg):
     llm = AutoModelForCausalLM.from_pretrained(
         llm_name,
         torch_dtype=torch.bfloat16 if cfg["train"]["bf16"] else torch.float32,
-    )
+    ).to(local_rank)
     # .to(local_rank if local_rank == 0 else torch.device("cpu"))  # LLM 放 GPU0
     
     llm.resize_token_embeddings(len(tokenizer))
@@ -194,6 +198,7 @@ def main_worker(local_rank, world_size, cfg):
         remove_unused_columns=True,
         ddp_find_unused_parameters=True,
         report_to="none",
+        optim="paged_adamw_8bit"
     )
 
     if cfg["train"]["gradient_checkpointing"]:
@@ -219,11 +224,8 @@ def main_worker(local_rank, world_size, cfg):
 def main(cfg_path="configs/config.yaml"):
     with open(cfg_path, "r") as f:
         cfg = yaml.safe_load(f)
-    local_rank = int(os.environ["LOCAL_RANK"])
-    rank = int(os.environ["RANK"])
     world_size = int(os.environ["WORLD_SIZE"])
-    torch.cuda.set_device(local_rank)
-    main_worker(local_rank, world_size, cfg)
+    main_worker(world_size, cfg)
 
 if __name__ == "__main__":
     main()

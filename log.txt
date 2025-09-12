@@ -1,11 +1,363 @@
-INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -c /tmp/tmpii36gfhq/test.c -o /tmp/tmpii36gfhq/test.o
-INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat /tmp/tmpii36gfhq/test.o -laio -o /tmp/tmpii36gfhq/a.out
-INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -c /tmp/tmpx9bwvgw4/test.c -o /tmp/tmpx9bwvgw4/test.o
-INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat /tmp/tmpx9bwvgw4/test.o -L/usr/local/cuda -L/usr/local/cuda/lib64 -lcufile -o /tmp/tmpx9bwvgw4/a.out
-INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -c /tmp/tmpy4y0gjnh/test.c -o /tmp/tmpy4y0gjnh/test.o
-INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat /tmp/tmpy4y0gjnh/test.o -laio -o /tmp/tmpy4y0gjnh/a.out
+INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -c /tmp/tmpi2kj9yp1/test.c -o /tmp/tmpi2kj9yp1/test.o
+INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat /tmp/tmpi2kj9yp1/test.o -laio -o /tmp/tmpi2kj9yp1/a.out
+INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -c /tmp/tmpzhsuellk/test.c -o /tmp/tmpzhsuellk/test.o
+INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat /tmp/tmpzhsuellk/test.o -L/usr/local/cuda -L/usr/local/cuda/lib64 -lcufile -o /tmp/tmpzhsuellk/a.out
+INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -O2 -isystem /home/chenyuxuan/miniconda3/envs/llam3.2/include -fPIC -c /tmp/tmpvr2sq2ra/test.c -o /tmp/tmpvr2sq2ra/test.o
+INFO       in spawn.py            --> gcc -pthread -B /home/chenyuxuan/miniconda3/envs/llam3.2/compiler_compat /tmp/tmpvr2sq2ra/test.o -laio -o /tmp/tmpvr2sq2ra/a.out
 INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
 ERROR      in gnn.py              --> Failed to convert smiles to Data object for CNC(=O)N1CC(OC2=CC=CC(F)=C2)C1: 'Sequential' object has no attrINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
-ing GVP pipeline.
-ERROR      in gnn.py              --> Failed to convert smiles to Data object for C#CC1=NCCN=CN1: 'Sequential' object has no attribute 'gvp_layer'
-ect has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to cINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed toINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CN(C)C(=O)CC(=O)N: 'SINFO       in mol_aware_lm_simple.py--> ✅ (OfINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C1=C(ON=N1)NCCO: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC1=CC(C)=C(Br)C(C)=C1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for Cc1c2cnoc2on1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(CO)C1(O)CCC1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(O)C1(O)CCC1=O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for N=C1OCC1C1CCO1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(O)C(=O)NCC=O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCC1C(O)C(=O)N1C: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for OC12CC3C(CC13)CC2: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC1CC2CCC2C=C1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC(=O)C1=CC=CC([N+1](=O)[O-1])=C1OC: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC(=O)C1=CC=CC([N+1](=O)[O-1])=C1OC.CC(C)(C)O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC(=O)C1=CC=CC([N+1](=O)[O-1])=C1OC.CC(C)(C)O.[BH4-1]: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC(=O)C1=CC=CC([N+1](=O)[O-1])=C1OC.CC(C)(C)O.[BH4-1].[Na+1]: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCCCC1=CC=C(C(=O)OC)C(OC)=C1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCCCC1=CC=C(C(=O)OC)C(OC)=C1.CO: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCCCC1=CC=C(C(=O)OC)C(OC)=C1.CO.Cl: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCCCC1=CC=C(C(=O)OC)C(OC)=C1.CO.Cl.[Na+1]: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCCCC1=CC=C(C(=O)OC)C(OC)=C1.CO.Cl.[Na+1].[OH1-1]: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_awaINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCc1c(nn[nH]1)OC: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(C)C1(C)CCC1C: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCCc1cn(nn1)C: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for O=COC1CC1CC#N: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC(=O)C1CC[C@H1]2CC[C@@H1]1N2: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC(=O)C1CC[C@H1]2CC[C@@H1]1N2.FC3=CC=CC=C3CBr: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC(=O)C1CC[C@H1]2CC[C@@H1]1N2.FC3=CC=CC=C3CBr.CCN(C(C)C)C(C)C: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC(=O)C1CC[C@H1]2CC[C@@H1]1N2.FC3=CC=CC=C3CBr.CCN(C(C)C)C(C)C.ClCCl: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for OCC1OCC=C1CO: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for OCC1OCC2CC1C2: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCOC1COC1CO: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CN(C)C(=O)C1=CC=CC(N)=C1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CN(C)CC1=CC=CC(N)=C1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC1OC2C1OC2=O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC1CN1C(=O)N1CC1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for OC(C#N)C1CC2OC12: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC1(C)CC(=O)C=2C(C(F)F)=NN(C3=CC=C(C(N)=O)C(NC4CCOCC4)=C3)C=2C1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for O=C1OC2OCC1C=C2: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for NC1=CC=C(C2=CC(=O)C3=C(NCC(=O)O)C(F)=CC(F)=C3O2)C=C1F: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(C)[C@H1]1CC[C@@H1]2[C@@]1(CC[C@]3([C@]2(CC=C4[C@H1]3C(=O)C[C@@H1]5[C@@]4(CCCC5(C)C)C)C)C)C: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC1C(C)C11CCO1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCOC(=O)CNC[C@H1](O)COC1=C(C)C=C(C2=NOC(C3=CC(OC)=NC(C4CCCC4)=C3)=N2)C=C1CC: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC1CC(C#N)C11CO1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CNCCO: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CNCCO.O=C(Cl)C1=CC=C(F)C(Cl)=C1F: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CNCCO.O=C(Cl)C1=CC=C(F)C(Cl)=C1F.ClCCl: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CNCCO.O=C(Cl)C1=CC=C(F)C(Cl)=C1F.ClCCl.[Na+1]: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CNCCO.O=C(Cl)C1=CC=C(F)C(Cl)=C1F.ClCCl.[Na+1].[OH1-1]: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_awarINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCC1CNC(=O)C1C: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC1=C(F)C(=O)N=NO1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERRINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C1OC2C1C21CC2NC12: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C(C#N)c1nc(no1)N: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CN(C)CCO.O=C(Cl)C1=CC=CC(C2=NC(NC(=O)C3(C4=CC=C5C(=C4)OC(F)(F)O5)CC3)=CC6=CC=CC=C26)=C1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CN(C)CCOC(=O)C1=CC=CC(C2=NC(NC(=O)C3(C4INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeliINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCCCCCCCCCCCCCCC(=O)OC[C@@]12[C@@H1](O1)[C@@H1]3[C@@H1]4[C@@]5(C[C@@H1]([C@]36[C@H1]7[C@H1]([C@H1](CCCCCC[C@@H1]([C@@](O4)(O5)O6)O)C)[C@H1]([C@H1]([C@@]7([C@H1]2O)O)OC(=O)C8=CC=CC=C8)C)OC(=O)C9=CC=CC=C9)C(=C)C: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC1=NC=CN1C2=CC=C(CO)C=C2: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCCCCCCC/C=C/CCCCCCCC(=O)OCC(C1C(C(CO1)O)O)O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(C)C1OC1C1CC1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCSCC(C(C1=CC(=C(C(=C1)OC)O)OC)SCC)SCC: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(C)(C)[Si](C)(C)OCCN1CCN(C2=CC=C(NC3=NC=C4C5=CC=NC=C5N(C6CCCC6)C4=N3)N=C2)CC1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(C)(C)[Si](C)(C)OCCN1CCN(C2=CC=C(NC3=NC=C4C5=CC=NC=C5N(C6CCCC6)C4=N3)N=C2)CC1.C7CCOC7: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(C)(C)[Si](C)(C)OCCN1CCN(C2=CC=C(NC3=NC=C4C5=CC=NC=C5N(C6CCCC6)C4=N3)N=C2)CC1.C7CCOC7.CCCC[N+1](CCCC)(CCCC)CCCC: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(C)(C)[Si](C)(C)OCCN1CCN(C2=CC=C(NC3=NC=C4C5=CC=NC=C5N(C6CCCC6)C4=N3)N=C2)CC1.C7CCOC7.CCCC[N+1](CCCC)(CCCC)CCCC.CCOCC: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(C)(C)[Si](C)(C)OCCN1CCN(C2=CC=C(NC3=NC=C4C5=CC=NC=C5N(C6CCCC6)C4=N3)N=C2)CC1.C7CCOC7.CCCC[N+1](CCCC)(CCCC)CCCC.CCOCC.CO: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(C)(C)[Si](C)(C)OCCN1CCN(C2=CC=C(NC3=NC=C4C5=CC=NC=C5N(C6CCCC6)C4=N3)N=C2)CC1.C7CCOC7.CCCC[N+1](CCCC)(CCCC)CCCC.CCOCINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(=CCC/C(=C/C(=O)SCCNC(=O)CCNC(=O)[C@@H1](C(C)(C)COP(=O)([O-1])OP(=O)([O-1])OC[C@@H1]1[C@H1]([C@H1]([C@@H1](O1)N2C=NC3=C(N=CN=C32)N)O)OP(=O)([O-1])[O-1])O)/C)C: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for O=S(=O)(OS(=O)(=O)C(F)(F)F)C(F)(F)F.OC1=CC=C(F)C=C1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for O=S(=O)(OC1=CC=C(F)C=C1)C(F)(F)F: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for OC1CCN(CC#N)C1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC1C2OCC12C=O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCC1(OC)C2COC12:INFO       in mol_aware_lm_simple.py--> ✅ (OffliINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for OC1CC1(C#N)C1CO1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC1C2C3C4C(CN23)N14: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCC1CCC11OC1C: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC1(C#N)C2OC2C1=O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for c1c2c([nH]n1)NCCC2: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCCC1COC(C)O1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for O=[N+1]([O-1])C1=CC=C(N2CCSCC2)C=C1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for NC1=CC=C(N2CCSCC2)C=C1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC/C=C\C[C@@H1]1[C@H1](CCC1=O)CC(=O)[O-1]: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C1OC11CC2OC2C=C1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(=O)OC(C)=O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(=O)OC(C)=O.CC(N)CCC1CCN(C(=O)OC(C)(C)C)CC1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(=O)NC(C)CCC1CCN(C(=O)OC(C)(C)C)CC1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for Cc1c(oc(n1)C#C)N: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C1CC1C12NC1C1OC21: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(O)C1CN1C=O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data objeINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data obINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC1C(C)C(C)(C)C1=O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C1CC2C1C3OC=NC23: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCOc1c(nc[nH]1)N: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C1CC=C(C1)C2COC2: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C1c2c(nn[nH]2)NC=N1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C[C@@H1]1[C@H1]([C@@H1]([C@H1](O[C@H1]1O[C@H1]2C[C@H1]3[C@@H1]4CC[C@@H1]([C@]4(CC=C3[C@@]5([C@@H1]2C[C@H1](CC5)OS(=O)(=O)O)C)C)[C@](C)(CCC=C(C)C)O)C)O)O[C@H1]6[C@@H1]([C@H1]([C@@H1]([C@H1](O6)C)O[C@H1]7[C@@H1]([C@H1]([C@H1]([C@H1](O7)C)O)O)O[C@H1]8[C@@H1]([C@H1]([C@H1]([C@H1](O8)C)O)O[C@H1]9[C@@H1]([C@H1]([C@H1]([C@H1](O9)CO)O)O)O)O)O)O[C@H1]%10[C@@H1]([C@H1]([C@@H1]([C@H1](O%10)C)O)O)O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC1CN(C)C1=O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(C)(C)C(=O)OCOC(=O)C1=C([C@@H1]2CCCO2)CS[C@@H1]3[C@H1](N)C(=O)N13: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(C)(C)C(=O)OCOC(=O)C1=C([C@@H1]2CCCO2)CS[C@@H1]3[C@H1](N)C(=O)N13.CO/N=C(\C(=O)O)C4=CSC(N)=N4: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CO/N=C(\C(=O)N[C@@H1]1C(=O)N2C(C(=O)OCOC(=O)C(C)(C)C)=C([C@@H1]3CCCO3)CS[C@H1]12)C4=CSC(N)=N4: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              -INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for Cc1cn2ccnc2o1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCCCCCCCCCCCCCCC(=O)OC[C@H1](COP(=O)(O)OC[C@@H1](COP(=O)(O)OC[C@@H1](COC(=O)CCCCCCCCCCCCCCC)OC(=O)CCCCCCC/C=C\C/C=C\CCCCC)O)OC(=O)CCCCCCCCCCCCCCC: 'Sequential' object has no attribute 'gINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC1OC(C)(C)C1C#C: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C(CO)C#CC(=O)CO: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for OC(C#N)C1COC1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(C)(C)OC(=O)C1CCCN2C(=O)C(C)(CC(=O)NO)C(=O)N12: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(C)(C)OC(=O)C1CCCN2C(=O)C(C)(CC(=O)NO)C(=O)N12.O=C(O)C(F)(F)F: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(=O)NC1=CC=C(C2=CC=C(CCCC(=O)O)C=C2)C=C1Br: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for O=C1C=C(C#C)C2OC12: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COCC1=CC(F)=C(C2=NC(C(=O)OC)=CC=C2F)C(F)=C1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COCC1=CC(F)=C(C2=NC(C(=O)OC)=CC=C2F)C(F)=C1.C3CCOC3: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COCC1=CC(F)=C(C2=NC(C(=O)OC)=CC=C2F)C(F)=C1.C3CCOC3.CO: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COCC1=CC(F)=C(C2=NC(C(=O)OC)=CC=C2F)C(F)=C1.C3CCOC3.CO.[Na+1]: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (OINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC#CCOC1=CC=C(S(=O)(=O)C2(C(=O)OC)CCN(S(=O)(=O)C3=CC=C(OC)C=C3)CC2)C=C1: 'INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to ERROR      in gnn.py              --> Failed to convert smiles to Data object for C1=CC=C2C(=C1)C3=CC=CC=C3INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCI: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCI.O=CC=1SC=C(Br)C=1C(=O)O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCOC(=O)C=1C(Br)=CSC=1C=O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC(=O)C1(C)CC1O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C[NH+]1C[C-]2OC(=O)C=C12: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C[C@@H1](NS(C)(=O)=O)C1=CC=C(Br)C=C1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(=O)C1(CC1)OC: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for Cn1c(c(nn1)C#C)O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(C)(C)OC(=O)N1CCNCC1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(C)(C)OC(=O)N1CCNCC1.O=CC2=CC=C3[NH1]C=CC3=C2: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC(C)(C)OC(=O)N1CCNCC1.O=CC2=CC=CINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC1(CO)C2NC2C1=O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC1OC(=O)C1C(N)=O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for N#CC12OC3C1NC23: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC1=CC(Cl)=C(CC(F)(F)F)C=C1[N+1](=O)[O-1]: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC1=CC(Cl)=C(CC(F)(F)F)C=C1N: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for c1c(c2n(n1)CC2)O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC1CC(=O)C2OC12: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC12C3C=C4CN(C13)C24: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CN=C1CCC=CCO1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for NCC1=CC2=NN=C(N3CCOCC3)N2C=C1C4=CC=C(Cl)C=C4Cl: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C1C2OC3CCOC3C12: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CNC1(C=O)C(O)C1O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for NC(=O)COC=N: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCCCC/C=C\C/C=C\C/C=C\CCCCCCC(=O)OC[C@H1](COP(=O)(O)OCCN)O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CN=C1OC2C=CCC12: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for N#CC1=CC=CC=2[NH1]C=CC1=2: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for N#CC1=CC=CC=2[NH1]C=CC1=2.C3CCOC3: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for N#CC1=CC=CC=2[NH1]C=CC1=2.C3CCOC3.[Al+3]: 'Sequential' object has no attribute 'gvp_layerINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for OC1C2OCC2C11CC1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. UsINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCCCC(C)CC=O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data oINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for conINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C1CC23NC4C2N1C34: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C1C=CCC1=NO: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for OC1COC1CCC#C: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for OC(CC#N)C1CN1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC(=O)C1=CN2C3=C(C(F)=C(F)C=C3C1=O)CCN2C: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CN1CCC2=C(F)C(F)=CC=3C(=O)C(C(=O)O)=CN1C2=3: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C1C=C(CN1C=O)CO: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCCC1C2OC2C1O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for c1cnn(c1O)CC#N: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for COC12CCC1(C)C2C: 'Sequential' object has no attribute 'gvp_layer'
+)=C3S2)C(=O)C4=CC=CC=C14: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCOC(=O)CC1=NN(CC2=NC3=CC=CC(Cl)=C3S2)C(=O)C4=CC=CC=C14.C5CCOC5: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCOC(=O)CC1=NN(CC2=NC3=CC=CC(Cl)=C3S2)C(=O)C4=CC=CC=C14.C5CCOC5.CCO: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCOC(=O)CC1INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C(#N)C1=NC(=C(O1)N)O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data objINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. UsingINFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for NCC1(CCO1)C#N: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for Cc1ccc(c(c1)O)O: 'Sequential' object has no attribute 'gvp_layer'
+o attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for NCCN1CCC(NC2=NC3=CC=CC=C3N2CC4=CC=C(F)C=C4)CC1.NC5=NC=CN=C5C(=O)O: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for NC1=NC=CN=C1C(=O)NCCN2CCC(NC3=NC4=CC=CC=C4N3CC5=CC=C(F)C=C5)CC2: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCCCCCCCC1CC2=CC(Br)=CC=C2O1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for c1(=O)c(n[nH]nc1N)N: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC12CC3(CCOC13)O2: 'Sequential' object has no attribute 'gvp_layer'
+ Failed to convert smiles to Data object for C1NC11CCN=COC1: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for C=CC1CC1(NC(=O)C2CC(OC(=O)C3=CC=C([N+1](=O)[O-1])C=C3)CN2C(=O)OC(C)(C)C)C(=O)OCC: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CC12CC(O)(C1)C1OC21: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCOC(=O)C=1N=C(C2=CC=CC([N+1](=O)[O-1])=C2)[NH1]C=1C3=CC=C(OC)C=C3: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCOC(=O)C=1N=C(C2=CC=CC([N+1](=O)[O-1])=C2)[NH1]C=1C3=CC=C(OC)C=C3.CCO: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCOC(=O)C=1N=C(C2=CC=CC([N+1](=O)[O-1])=C2)[NH1]C=1C3=CC=C(OC)C=C3.CCO.[Na+1]: 'Sequential' object has no attribute 'gvp_layer'
+INFO       in mol_aware_lm_simple.py--> ✅ (Offline) Found SMILES for context. Using GVP pipeline.
+ERROR      in gnn.py              --> Failed to convert smiles to Data object for CCOC(=O)C=1N=C(C2=CC=CC([N+1](=O)[O-1])=C2)[NH1]C=1C3=CC=C(OC)C=C3.CCO.[Na+1].[OH1-1]: 'Sequential' object has no attribute 'gvp_layer'
