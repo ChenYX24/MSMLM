@@ -37,7 +37,7 @@ train:
   freeze_diffusion: true 
   
 network:
-  proxy: "http://127.0.0.1:7890"
+  proxy: "http://127.0.0.1:7899"
 
 diffusion:
   diffusion:                  # = diffusion_encoder_config

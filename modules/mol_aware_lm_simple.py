@@ -7,7 +7,7 @@ import logging
 import os
 
 # 导入你提供的原始模块
-from .gnn import GVPEncoder, ATOM_TYPES
+from .gnn import GVPEncoder
 from .mlp import MLPAdapter, DiffusionAdapter
 from .tools import extract_and_convert_online
 from transformers.modeling_outputs import CausalLMOutputWithPast
