@@ -69,76 +69,76 @@ class GVPEncoder(nn.Module):
         将 SMILES 字符串转换为 PyG Data 对象。
         此方法封装了离线预处理脚本中的分子解析逻辑。
         """
-        try:
-            mol = Chem.MolFromSmiles(smiles)
-            if mol is None or mol.GetNumAtoms() == 0:
-                return None
-            mol = Chem.RemoveHs(mol)
-            if mol.GetNumAtoms() == 0:
-                return None
-
-            # --- 1. 原子特征 (x) ---
-            x_list = []
-            for atom in mol.GetAtoms():
-                onehot = [0] * len(ATOM_TYPES)
-                if atom.GetSymbol() in ATOM_TYPES:
-                    onehot[ATOM_TYPES.index(atom.GetSymbol())] = 1
-                x_list.append(onehot)
-            x = torch.tensor(np.array(x_list, dtype=np.float32), dtype=torch.float)
-            
-            # 增加原子杂化特征以匹配 GVP 节点维度
-            # 这是一个简化的假设，更完整的特征需要更多的RDKit调用
-            # 这里我只使用你原始脚本中的onehot，所以节点的标量维度是9
-            # 你的GVPEncoder init中的node_dims[0]应该是9
-            if self.node_input.gvp_layer.V_in != len(ATOM_TYPES):
-                 logging.warning(f"GVP node_dims[0] ({self.node_input.gvp_layer.V_in}) does not match atom features ({len(ATOM_TYPES)}).")
-            
-            # --- 2. 边索引 (edge_index) 和 边特征 (edge_attr) ---
-            edge_index, edge_attr = [], []
-            for bond in mol.GetBonds():
-                i, j = bond.GetBeginAtomIdx(), bond.GetEndAtomIdx()
-                btype = bond.GetBondType()
-                bt_onehot = [
-                    float(btype == Chem.rdchem.BondType.SINGLE),
-                    float(btype == Chem.rdchem.BondType.DOUBLE),
-                    float(btype == Chem.rdchem.BondType.TRIPLE),
-                    float(btype == Chem.rdchem.BondType.AROMATIC),
-                    float(btype == Chem.rdchem.BondType.AROMATIC)
-                ]
-                edge_index += [[i, j], [j, i]]
-                edge_attr += [bt_onehot, bt_onehot]
-            edge_index = torch.tensor(np.array(edge_index, dtype=np.int64).T, dtype=torch.long)
-            # 你原始脚本的edge_attr是np.float32，这里我转为tensor
-            edge_attr = torch.tensor(np.array(edge_attr, dtype=np.float32), dtype=torch.float)
-
-            # --- 3. 3D 坐标 (pos) ---
-            coords = self._embed_3d_coords_rdkit(mol)
-            if coords is None:
-                # 警告：这里没有 OpenBabel 备份，因为它需要额外的库，
-                # 你需要自行决定是否添加
-                return None
-            pos = torch.tensor(coords, dtype=torch.float)
-            x_vector = pos.clone().unsqueeze(1) # [N, 1, 3]
-
-            # --- 4. 边的矢量特征 ---
-            edge_attr_vector, edge_length_scalar = _get_edge_features_from_coords(pos, edge_index)
-
-            # --- 5. 组装 PyG Data 对象 ---
-            data = Data(
-                x=x,
-                x_vector=x_vector,
-                edge_index=edge_index,
-                edge_attr=edge_attr, # 你原代码中的 edge_attr 是键特征，但GVP的edge_attr是标量
-                edge_attr_vector=edge_attr_vector,
-                pos=pos,
-                smiles=smiles,
-                edge_scalar=edge_length_scalar
-            )
-            return data
-
-        except Exception as e:
-            logging.error(f"Failed to convert smiles to Data object for {smiles}: {e}")
+        # try:
+        mol = Chem.MolFromSmiles(smiles)
+        if mol is None or mol.GetNumAtoms() == 0:
             return None
+        mol = Chem.RemoveHs(mol)
+        if mol.GetNumAtoms() == 0:
+            return None
+
+        # --- 1. 原子特征 (x) ---
+        x_list = []
+        for atom in mol.GetAtoms():
+            onehot = [0] * len(ATOM_TYPES)
+            if atom.GetSymbol() in ATOM_TYPES:
+                onehot[ATOM_TYPES.index(atom.GetSymbol())] = 1
+            x_list.append(onehot)
+        x = torch.tensor(np.array(x_list, dtype=np.float32), dtype=torch.float)
+        
+        # 增加原子杂化特征以匹配 GVP 节点维度
+        # 这是一个简化的假设，更完整的特征需要更多的RDKit调用
+        # 这里我只使用你原始脚本中的onehot，所以节点的标量维度是9
+        # 你的GVPEncoder init中的node_dims[0]应该是9
+        if self.node_input.gvp_layer.V_in != len(ATOM_TYPES):
+            logging.warning(f"GVP node_dims[0] ({self.node_input.gvp_layer.V_in}) does not match atom features ({len(ATOM_TYPES)}).")
+        
+        # --- 2. 边索引 (edge_index) 和 边特征 (edge_attr) ---
+        edge_index, edge_attr = [], []
+        for bond in mol.GetBonds():
+            i, j = bond.GetBeginAtomIdx(), bond.GetEndAtomIdx()
+            btype = bond.GetBondType()
+            bt_onehot = [
+                float(btype == Chem.rdchem.BondType.SINGLE),
+                float(btype == Chem.rdchem.BondType.DOUBLE),
+                float(btype == Chem.rdchem.BondType.TRIPLE),
+                float(btype == Chem.rdchem.BondType.AROMATIC),
+                float(btype == Chem.rdchem.BondType.AROMATIC)
+            ]
+            edge_index += [[i, j], [j, i]]
+            edge_attr += [bt_onehot, bt_onehot]
+        edge_index = torch.tensor(np.array(edge_index, dtype=np.int64).T, dtype=torch.long)
+        # 你原始脚本的edge_attr是np.float32，这里我转为tensor
+        edge_attr = torch.tensor(np.array(edge_attr, dtype=np.float32), dtype=torch.float)
+
+        # --- 3. 3D 坐标 (pos) ---
+        coords = self._embed_3d_coords_rdkit(mol)
+        if coords is None:
+            # 警告：这里没有 OpenBabel 备份，因为它需要额外的库，
+            # 你需要自行决定是否添加
+            return None
+        pos = torch.tensor(coords, dtype=torch.float)
+        x_vector = pos.clone().unsqueeze(1) # [N, 1, 3]
+
+        # --- 4. 边的矢量特征 ---
+        edge_attr_vector, edge_length_scalar = _get_edge_features_from_coords(pos, edge_index)
+
+        # --- 5. 组装 PyG Data 对象 ---
+        data = Data(
+            x=x,
+            x_vector=x_vector,
+            edge_index=edge_index,
+            edge_attr=edge_attr, # 你原代码中的 edge_attr 是键特征，但GVP的edge_attr是标量
+            edge_attr_vector=edge_attr_vector,
+            pos=pos,
+            smiles=smiles,
+            edge_scalar=edge_length_scalar
+        )
+        return data
+
+        # except Exception as e:
+        #     logging.error(f"Failed to convert smiles to Data object for {smiles}: {e}")
+        #     return None
     
     # ★ 新增方法：封装RDKit 3D嵌入逻辑
     def _embed_3d_coords_rdkit(self, mol, max_iters=200):

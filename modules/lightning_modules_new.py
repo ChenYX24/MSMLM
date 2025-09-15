@@ -4,11 +4,11 @@ import pytorch_lightning as pl
 from torch.utils.data import DataLoader
 from torch_scatter import scatter_add
 import numpy as np
-from equivariant_diffusion.dynamics import LigandOnlyEGNNDynamics
-from equivariant_diffusion.conditional_model_new import LigandOnlyConditionalDDPM
-from constants import FLOAT_TYPE, INT_TYPE, dataset_params
-from utils import *
-from analysis.molecule_builder import build_molecule, process_molecule
+from .equivariant_diffusion.dynamics import LigandOnlyEGNNDynamics
+from .equivariant_diffusion.conditional_model_new import LigandOnlyConditionalDDPM
+from .constants import FLOAT_TYPE, INT_TYPE, dataset_params
+from .utils import *
+from .analysis.molecule_builder import build_molecule, process_molecule
 
 
 class LigandOnlyDDPM(pl.LightningModule):

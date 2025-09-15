@@ -80,6 +80,24 @@ class GNNMLP(nn.Module):
             self.proj = DiffusionStyleMLP(d_in, d_hidden, d_out, dropout, zero_init=False, residual=False)
     def forward(self, x): return self.proj(x)
 
+class DiffusionAdapter(nn.Module):
+    def __init__(self, in_dim, out_dim):
+        super().__init__()
+        self.fc = nn.Sequential(
+            nn.Linear(in_dim, out_dim),
+            nn.LayerNorm(out_dim),
+            nn.ReLU(),
+            nn.Linear(out_dim, out_dim),
+            nn.LayerNorm(out_dim)
+        )
+        # 可选：按你训练里的 init 方式
+        for m in self.fc:
+            if isinstance(m, nn.Linear):
+                nn.init.xavier_uniform_(m.weight)
+                nn.init.constant_(m.bias, 0)
+
+    def forward(self, x):
+        return self.fc(x)
 
 class MLPAdapter(nn.Module):
     """

@@ -189,7 +189,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from equivariant_diffusion.egnn_new import EGNN
+from .egnn_new import EGNN
 
 
 class LigandOnlyEGNNDynamics(nn.Module):

@@ -8,17 +8,12 @@ import os
 
 # 导入你提供的原始模块
 from .gnn import GVPEncoder, ATOM_TYPES
-from .mlp import MLPAdapter
+from .mlp import MLPAdapter, DiffusionAdapter
 from .tools import extract_and_convert_online
 from transformers.modeling_outputs import CausalLMOutputWithPast
 
-try:
-    from lightning_modules_new import LigandOnlyDDPM
-    from rdkit import Chem
-except Exception:
-    LigandOnlyDDPM = None
-    Chem = None
-    logging.warning("LigandOnlyDDPM / RDKit not available; diffusion fallback will be disabled.")
+from .lightning_modules_new import LigandOnlyDDPM
+from rdkit import Chem
 
 
 # 禁用RDKit日志
@@ -121,11 +116,9 @@ class MolAwareCausalLM(nn.Module):
 
         # ---------- Diffusion adapter (= diffusion_mlp) ----------
         # 统一命名：你的训练里的 MLP 就是我们这里的 diffusion_adapter
-        self.diffusion_adapter = MLPAdapter(
-            input_dim=llm_hidden_size,
-            output_dim=self.diffusion_cond_dim,
-            hidden_dim=llm_hidden_size // 2,
-            num_layers=2,
+        self.diffusion_adapter = DiffusionAdapter(
+            in_dim=llm_hidden_size,
+            out_dim=self.diffusion_cond_dim,
         ).to(self._first_device())
 
         if diffusion_adapter_config:
