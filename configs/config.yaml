@@ -33,6 +33,19 @@ train:
   freeze_llm: false # 冻结LLM本体，一般为false
   freeze_gnn: false # 冻结GNN编码器
   freeze_mol_adapter: false # 冻结GNN到LLM的适配器
+  freeze_diffusion_adapter: true 
+  freeze_diffusion: true 
   
 network:
   proxy: "http://127.0.0.1:7890"
+
+diffusion:
+  diffusion:                  # = diffusion_encoder_config
+    checkpoint_path: "/data1/chenyuxuan/Project/MSMLM/model/diffusion/pubchem_fullatom_cond_0806_v1/log/pubchem_fullatom_cond_0806_v1/checkpoints/last-v1.ckpt"
+    device: "cuda:0"
+    cond_dim: 3072          # 与你训练时的 cond_dim 保持一致
+  adapter:                   # = diffusion_adapter_config（你的 diffusion_mlp）
+    ckpt_path: "/data1/chenyuxuan/Project/MSMLM/model/diffusion_mlp/ckpt/diffusion_mlp_epoch1.pt"
+  generation:
+    num_nodes_lig: null      # 传给 LigandOnlyDDPM.generate_mol_from_embedding
+    max_tries: 1             # 解析失败时是否重试（你要的话可以在代码里循环 N 次）

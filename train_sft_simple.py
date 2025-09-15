@@ -93,13 +93,23 @@ def main_worker(world_size, cfg):
     llm.config.bos_token_id = tokenizer.bos_token_id
 
     # ---------------- MolAwareCausalLM ----------------
+    diffusion_conf = cfg.get("diffusion", {}) or {}
+    diff_conf = diffusion_conf.get("diffusion", {}) or {}
+    diff_adp_conf = diffusion_conf.get("adapter", {}) or {}
+
     model = MolAwareCausalLM(
         llm=llm,
         tokenizer=tokenizer,
         mol_token=mol_token,
-        proxy=cfg["network"]["proxy"],
+        proxy=cfg.get("network", {}).get("proxy"),  # 避免 KeyError
         debug=False,
+        diffusion_config=diff_conf,    
+        diffusion_adapter_config=diff_adp_conf,     
     )
+
+    # 若你要把 generation 参数塞进类里（供内部调用）
+    gen_conf = diffusion_conf.get("generation", {}) or {}
+    model.diffusion_gen_num_nodes_lig = gen_conf.get("num_nodes_lig", None)
 
     # ---------------- GNN 权重加载 ----------------
     gnn_state_dict_path = cfg["paths"].get("gnn_state_dict_path")
@@ -111,18 +121,35 @@ def main_worker(world_size, cfg):
         model.gvp_encoder.load_state_dict(new_state_dict, strict=False)
         print(f"[{local_rank}] ✅ Loaded GVPEncoder")
 
-    # ---------------- 模型并行 ----------------
-    # 冻结参数可选
+    # ---------------- 冻结参数（按 YAML 开关） ----------------
     freeze_llm = cfg["train"].get("freeze_llm", False)
     freeze_gnn = cfg["train"].get("freeze_gnn", False)
+    freeze_diffusion = cfg["train"].get("freeze_diffusion", True)
     freeze_mol_adapter = cfg["train"].get("freeze_mol_adapter", False)
+    freeze_diffusion_adapter = cfg["train"].get("freeze_diffusion_adapter", True)
+
     if freeze_llm:
         for n, p in model.llm.named_parameters():
-            if 'embed_tokens' not in n: p.requires_grad = False
+            # 视情况放开 embedding / lm_head；下行仅示例保留输入嵌入可训
+            if 'embed_tokens' not in n:
+                p.requires_grad = False
+
     if freeze_gnn:
-        for p in model.gvp_encoder.parameters(): p.requires_grad = False
+        for p in model.gvp_encoder.parameters():
+            p.requires_grad = False
+
     if freeze_mol_adapter:
-        for p in model.mol_adapter.parameters(): p.requires_grad = False
+        for p in model.mol_adapter.parameters():
+            p.requires_grad = False
+
+    # 注意对象名：diffusion 是 DDPM 模型；diffusion_adapter 是你训练的 MLP
+    if freeze_diffusion and getattr(model, "diffusion", None) is not None:
+        for p in model.diffusion.parameters():
+            p.requires_grad = False
+
+    if freeze_diffusion_adapter and getattr(model, "diffusion_adapter", None) is not None:
+        for p in model.diffusion_adapter.parameters():
+            p.requires_grad = False
 
     # ---------------- DDP 包装 ----------------
     # model = torch.nn.parallel.DistributedDataParallel(

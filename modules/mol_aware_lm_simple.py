@@ -4,12 +4,22 @@ import torch
 import torch.nn as nn
 from typing import Optional, Tuple, List, Dict
 import logging
+import os
 
 # 导入你提供的原始模块
 from .gnn import GVPEncoder, ATOM_TYPES
 from .mlp import MLPAdapter
 from .tools import extract_and_convert_online
 from transformers.modeling_outputs import CausalLMOutputWithPast
+
+try:
+    from lightning_modules_new import LigandOnlyDDPM
+    from rdkit import Chem
+except Exception:
+    LigandOnlyDDPM = None
+    Chem = None
+    logging.warning("LigandOnlyDDPM / RDKit not available; diffusion fallback will be disabled.")
+
 
 # 禁用RDKit日志
 logging.getLogger("rdkit").setLevel(logging.ERROR)
@@ -19,17 +29,6 @@ def build_position_ids(attention_mask: torch.Tensor) -> torch.Tensor:
     cumsum = attention_mask.long().cumsum(dim=-1)
     pos = (cumsum - 1).clamp(min=0)
     return pos * attention_mask.long()
-
-# --- Diffusion 管道占位符 ---
-class DummyDiffusionEncoder(nn.Module):
-    def __init__(self, output_dim):
-        super().__init__()
-        self.proj = nn.Linear(200, output_dim)
-    def forward(self, llm_context: str) -> torch.Tensor:
-        # 这个方法仅用于占位和演示，你将在这里实现你的 Diffusion 管道
-        logging.info("Using Dummy Diffusion Encoder as fallback.")
-        embedding = torch.randn(200, device=self.proj.weight.device)
-        return self.proj(embedding)
 
 # --- 原始 MolAwareCausalLM 类的修改版本 ---
 class MolAwareCausalLM(nn.Module):
@@ -51,6 +50,8 @@ class MolAwareCausalLM(nn.Module):
         target_layer_for_capture: int = -1,
         gvp_encoder_config: Optional[Dict] = None,
         mol_adapter_config: Optional[Dict] = None,
+        diffusion_config: Optional[Dict] = None,
+        diffusion_adapter_config: Optional[Dict] = None,
     ):
         super().__init__()
         self.llm = llm
@@ -78,7 +79,7 @@ class MolAwareCausalLM(nn.Module):
         self._capture_bucket: List[List[torch.Tensor]] = []
         self._capture_hook = None
         
-        # --- 1. init: 添加 gvp_encoder, mol_adapter 和 diffusion_encoder ---
+        # --- 1. init: 添加 gvp_encoder, mol_adapter 和 diffusion ---
         llm_hidden_size = self.llm.config.hidden_size
         
         # GVPEncoder 的配置
@@ -102,11 +103,43 @@ class MolAwareCausalLM(nn.Module):
         }
         if mol_adapter_config:
             mol_adapter_cfg.update(mol_adapter_config)
-            
+        
+        # ---------- Diffusion encoder (DDPM) ----------
+        self.diffusion = None
+        self.diffusion_cond_dim = llm_hidden_size  # 默认同 hidden_size
+        if diffusion_config:
+            self.diffusion_cond_dim = diffusion_config.get("cond_dim", llm_hidden_size)
+            ckpt = diffusion_config.get("checkpoint_path")
+            device = diffusion_config.get("device", str(self._first_device()))
+            if ckpt and LigandOnlyDDPM is not None:
+                try:
+                    self.diffusion = LigandOnlyDDPM.load_from_checkpoint(ckpt, map_location=device).to(device)
+                    self.diffusion.eval()
+                    logging.info(f"Loaded diffusion checkpoint: {ckpt}")
+                except Exception as e:
+                    logging.warning(f"Failed to load diffusion checkpoint: {e}")
+
+        # ---------- Diffusion adapter (= diffusion_mlp) ----------
+        # 统一命名：你的训练里的 MLP 就是我们这里的 diffusion_adapter
+        self.diffusion_adapter = MLPAdapter(
+            input_dim=llm_hidden_size,
+            output_dim=self.diffusion_cond_dim,
+            hidden_dim=llm_hidden_size // 2,
+            num_layers=2,
+        ).to(self._first_device())
+
+        if diffusion_adapter_config:
+            ckpt = diffusion_adapter_config.get("ckpt_path")
+            if ckpt and os.path.isfile(ckpt):
+                try:
+                    sd = torch.load(ckpt, map_location=self._first_device())
+                    self.diffusion_adapter.load_state_dict(sd, strict=True)
+                    logging.info(f"Loaded diffusion_adapter weights from: {ckpt}")
+                except Exception as e:
+                    logging.warning(f"Failed to load diffusion_adapter weights: {e}")
+
         self.gvp_encoder = GVPEncoder(**gvp_encoder_cfg).to(self._first_device())
         self.mol_adapter = MLPAdapter(**mol_adapter_cfg).to(self._first_device())
-        self.diffusion_encoder = DummyDiffusionEncoder(llm_hidden_size).to(self._first_device())
-        
         self.smiles_cache: Dict[str, str] = {}
         
     def _first_device(self):
@@ -135,46 +168,175 @@ class MolAwareCausalLM(nn.Module):
         
         return smiles_map.get(last_cem)
 
+    def _get_last_hidden_before_pos(self, row_ids: torch.Tensor, end_pos: int) -> torch.Tensor:
+        assert end_pos > 0, "end_pos should be > 0"
+        dev = self._first_device()
+        prefix = row_ids[:end_pos].unsqueeze(0).to(dev)
+        attn = (prefix != self.pad_token_id).long().to(dev)
+        out = self.llm(input_ids=prefix, attention_mask=attn,
+                       output_hidden_states=True, use_cache=False, return_dict=True)
+        return out.hidden_states[-1][0, -1, :].detach()
+
+    def _black_box_from_hidden_hctx(self, h_ctx: torch.Tensor) -> Optional[torch.Tensor]:
+        """
+        已有 h_ctx（<mol> 之前最后一个 token 的最后一层隐状态，shape=[H]）。
+        走：h_ctx -> diffusion_adapter -> diffusion.generate -> RDKit 解析 -> GVP -> mol_adapter
+        解析失败则返回 None（不插虚拟步）。
+        """
+        if self.diffusion is None or LigandOnlyDDPM is None or Chem is None:
+            logging.warning("Diffusion not available; skip virtual step.")
+            return None
+
+        dev = self._first_device()
+        cond = self.diffusion_adapter(h_ctx.to(dev)).float().unsqueeze(0)  # [1, cond_dim]
+
+        try:
+            gen_mols = self.diffusion.generate_mol_from_embedding(
+                batch_size=1, embeddings=cond, num_nodes_lig=self.diffusion_gen_num_nodes_lig
+            )
+            gen_mol = gen_mols[0] if isinstance(gen_mols, (list, tuple)) else gen_mols
+            gen_smiles = Chem.MolToSmiles(gen_mol) if gen_mol is not None else None
+        except Exception as e:
+            logging.warning(f"Diffusion generation failed: {e}")
+            gen_smiles = None
+
+        if not gen_smiles:
+            return None
+
+        gvp_embedding = self.gvp_encoder.forward_from_smiles(gen_smiles).squeeze(0)
+        return self.mol_adapter(gvp_embedding)
+
     def _black_box_embed_offline(
         self,
         row_ids: torch.Tensor,
         row_embeds: torch.Tensor,
         row_mask: torch.Tensor,
         pos_mol: int,
-    ) -> torch.Tensor:
+    ) -> Optional[torch.Tensor]:
         """
-        训练/评估时，根据上下文 SMILES 走 GVP，否则走 Diffusion。
+        优先：从上下文识别 SMILES -> GVP -> mol_adapter。
+        否则：h_ctx -> diffusion_adapter -> diffusion.generate -> 解析 SMILES -> 若成功再走 GVP；否则返回 None（不插入虚拟步）。
         """
         llm_context = self.tokenizer.decode(row_ids[:pos_mol].tolist(), skip_special_tokens=True)
         smiles = self._get_smiles_from_context(llm_context)
-        
+
         if smiles:
-            logging.info(f"✅ (Offline) Found SMILES for context. Using GVP pipeline.")
+            logging.info("✅ (Offline) Found SMILES; using GVP.")
             gvp_embedding = self.gvp_encoder.forward_from_smiles(smiles).squeeze(0)
-            mol_embedding = self.mol_adapter(gvp_embedding)
-            return mol_embedding
-        else:
-            logging.warning(f"❌ (Offline) No SMILES found. Using Diffusion pipeline as fallback.")
-            return self.diffusion_encoder(llm_context)
+            return self.mol_adapter(gvp_embedding)
+
+        # 无 SMILES：尝试扩散生成 → 解析 → 再走 GVP
+        if self.diffusion is None or LigandOnlyDDPM is None or Chem is None:
+            logging.warning("❌ (Offline) Diffusion not available; skip virtual step.")
+            return None
+
+        h_ctx = self._get_last_hidden_before_pos(row_ids, pos_mol)  # [H]
+        cond = self.diffusion_adapter(h_ctx).float().unsqueeze(0)   # [1, cond_dim]
+
+        try:
+            gen_mols = self.diffusion.generate_mol_from_embedding(batch_size=1, embeddings=cond, num_nodes_lig=None)
+            gen_mol = gen_mols[0] if isinstance(gen_mols, (list, tuple)) else gen_mols
+            gen_smiles = Chem.MolToSmiles(gen_mol) if gen_mol is not None else None
+        except Exception as e:
+            logging.warning(f"Diffusion generation failed: {e}")
+            gen_smiles = None
+
+        if gen_smiles:
+            logging.info("🔁 (Offline) Got SMILES from diffusion; using GVP.")
+            gvp_embedding = self.gvp_encoder.forward_from_smiles(gen_smiles).squeeze(0)
+            return self.mol_adapter(gvp_embedding)
+
+        logging.warning("❌ (Offline) No SMILES after diffusion; skip virtual step.")
+        return None
+
 
     def _black_box_embed_online(
         self,
         llm_context_text: str,
-    ) -> torch.Tensor:
+        context_ids: Optional[torch.Tensor] = None,
+    ) -> Optional[torch.Tensor]:
         """
-        推理时，根据上下文 SMILES 走 GVP，否则走 Diffusion。
-        （这里简化了，直接传入完整上下文文本）
+        推理路径：同 offline 逻辑；拿不到 SMILES 时返回 None，调用方据此不插虚拟步。
         """
         smiles = self._get_smiles_from_context(llm_context_text)
-
         if smiles:
-            logging.info(f"✅ (Online) Found SMILES for context. Using GVP pipeline.")
+            logging.info("✅ (Online) Found SMILES; using GVP.")
             gvp_embedding = self.gvp_encoder.forward_from_smiles(smiles).squeeze(0)
-            mol_embedding = self.mol_adapter(gvp_embedding)
-            return mol_embedding
-        else:
-            logging.warning(f"❌ (Online) No SMILES found. Using Diffusion pipeline as fallback.")
-            return self.diffusion_encoder(llm_context_text)
+            return self.mol_adapter(gvp_embedding)
+
+        if self.diffusion is None or LigandOnlyDDPM is None or Chem is None:
+            logging.warning("❌ (Online) Diffusion not available; skip virtual step.")
+            return None
+
+        dev = self._first_device()
+        if context_ids is None:
+            toks = self.tokenizer(llm_context_text, return_tensors="pt", add_special_tokens=False)
+            context_ids = toks["input_ids"].to(dev)
+        attn = (context_ids != self.pad_token_id).long().to(dev)
+        out = self.llm(input_ids=context_ids, attention_mask=attn,
+                       output_hidden_states=True, use_cache=False, return_dict=True)
+        h_ctx = out.hidden_states[-1][0, -1, :].detach()          # [H]
+        cond = self.diffusion_adapter(h_ctx).float().unsqueeze(0) # [1, cond_dim]
+
+        try:
+            gen_mols = self.diffusion.generate_mol_from_embedding(batch_size=1, embeddings=cond, num_nodes_lig=None)
+            gen_mol = gen_mols[0] if isinstance(gen_mols, (list, tuple)) else gen_mols
+            gen_smiles = Chem.MolToSmiles(gen_mol) if gen_mol is not None else None
+        except Exception as e:
+            logging.warning(f"Diffusion generation failed: {e}")
+            gen_smiles = None
+
+        if gen_smiles:
+            logging.info("🔁 (Online) Got SMILES from diffusion; using GVP.")
+            gvp_embedding = self.gvp_encoder.forward_from_smiles(gen_smiles).squeeze(0)
+            return self.mol_adapter(gvp_embedding)
+
+        logging.warning("❌ (Online) No SMILES after diffusion; skip virtual step.")
+        return None
+
+    def _black_box_embed_online(
+        self,
+        llm_context_text: Optional[str] = None,
+        context_ids: Optional[torch.Tensor] = None,
+        h_ctx: Optional[torch.Tensor] = None,
+    ) -> Optional[torch.Tensor]:
+        """
+        优先流程：
+        1) 先从文本里解析 SMILES → GVP → mol_adapter
+        2) 若无 SMILES：
+            - 若提供了 h_ctx：直接 _black_box_from_hidden_hctx(h_ctx)
+            - 否则再跑一次 prefix 前向拿 h_ctx（保留旧逻辑做兜底）
+        """
+        # 先用上下文直接识别 SMILES（如果给了）
+        if llm_context_text:
+            smiles = self._get_smiles_from_context(llm_context_text)
+            if smiles:
+                gvp_embedding = self.gvp_encoder.forward_from_smiles(smiles).squeeze(0)
+                return self.mol_adapter(gvp_embedding)
+
+        # 没识别到 SMILES：如果有 h_ctx，直接用
+        if h_ctx is not None:
+            return self._black_box_from_hidden_hctx(h_ctx)
+
+        # 兜底：没有 h_ctx，就做一次前向拿 h_ctx（和原实现一致）
+        if context_ids is None and llm_context_text is not None:
+            dev = self._first_device()
+            toks = self.tokenizer(llm_context_text, return_tensors="pt", add_special_tokens=False)
+            context_ids = toks["input_ids"].to(dev)
+        if context_ids is not None:
+            attn = (context_ids != self.pad_token_id).long().to(context_ids.device)
+            out = self.llm(
+                input_ids=context_ids,
+                attention_mask=attn,
+                output_hidden_states=True,
+                use_cache=False,
+                return_dict=True,
+            )
+            h_ctx = out.hidden_states[-1][0, -1, :].detach()
+            return self._black_box_from_hidden_hctx(h_ctx)
+
+        return None
+
 
     # ---------- 前向（训练/评估） ----------
     def forward(
@@ -240,9 +402,12 @@ class MolAwareCausalLM(nn.Module):
             for p in mol_positions:
                 if new_msk_list[p] == 0:
                     continue
-                
-                # ★ 调用新的黑盒函数
                 mol_emb = self._black_box_embed_offline(row_ids, row_emb, row_msk, p)
+                if mol_emb is None:
+                    # 不追加虚拟步，保持原序列不变
+                    if self.debug:
+                        logging.info("[Offline] Skip virtual step for <mol> (no SMILES).")
+                    continue
                 new_emb_list.append(mol_emb)
                 new_msk_list.append(1)
                 if has_labels:
@@ -307,14 +472,18 @@ class MolAwareCausalLM(nn.Module):
         repetition_penalty: float = 1.05,
         **kwargs,
     ):
+        """
+        实时推理：遇到 <mol> 时优先用 llm_context_text 解析 SMILES；
+        若无则用当前步 h_ctx 走 diffusion→解析；失败则屏蔽 <mol> 重采样。
+        """
         use_cache = kwargs.pop("use_cache", True)
         try:
             self.llm.config.use_cache = True
         except Exception:
             pass
-            
+
         if not realtime_mol:
-            # 非实时，走原始逻辑
+            # 非实时路径，原样透传
             return self.llm.generate(
                 input_ids=input_ids,
                 attention_mask=attention_mask,
@@ -330,19 +499,20 @@ class MolAwareCausalLM(nn.Module):
             )
 
         assert input_ids is not None and input_ids.size(0) == 1, "realtime_mol 仅支持 batch=1"
-        
         llm = self.llm
         dev = self._first_device()
-        
+
         if attention_mask is None:
             attention_mask = (input_ids != self.pad_token_id).long()
         input_ids = input_ids.to(dev)
         attention_mask = attention_mask.to(dev)
-        
+
+        # 首次前向
         outputs = llm(
             input_ids=input_ids,
             attention_mask=attention_mask,
             use_cache=use_cache,
+            output_hidden_states=True,   # 关键：拿 h_ctx
             return_dict=True,
             **kwargs,
         )
@@ -350,78 +520,113 @@ class MolAwareCausalLM(nn.Module):
         attn_mask = attention_mask
         generated_ids: List[int] = []
         end_id = self.eos_token_id if eos_token_id is None else eos_token_id
-        
-        for _ in range(max_new_tokens):
-            logits = outputs.logits[:, -1, :]
-            
-            # Repetition penalty logic...
-            if repetition_penalty and repetition_penalty != 1.0 and generated_ids:
-                uniq = list(set(generated_ids))
-                logits[:, uniq] = logits[:, uniq] / repetition_penalty
-            
-            # Sampling / Greedy logic...
+
+        def _apply_sampling(logits: torch.Tensor) -> torch.Tensor:
+            # 按当前设置做一次采样/贪心
             if do_sample:
-                if temperature != 1.0:
-                    logits = logits / temperature
-                if top_k > 0:
-                    v, _ = torch.topk(logits, top_k)
-                    logits = logits.masked_fill(logits < v[:, [-1]], float("-inf"))
-                if top_p < 1.0:
-                    sorted_logits, sorted_indices = torch.sort(logits, descending=True)
+                _logits = logits
+                if temperature and temperature != 1.0:
+                    _logits = _logits / temperature
+                if top_k and top_k > 0:
+                    v, _ = torch.topk(_logits, top_k)
+                    _logits = _logits.masked_fill(_logits < v[:, [-1]], float("-inf"))
+                if top_p and top_p < 1.0:
+                    sorted_logits, sorted_indices = torch.sort(_logits, descending=True)
                     probs = torch.softmax(sorted_logits, dim=-1)
                     cumprobs = probs.cumsum(dim=-1)
                     cutoff = (cumprobs > top_p).float().cumsum(dim=-1).bool()
                     sorted_logits[cutoff] = float("-inf")
-                    logits = torch.full_like(logits, float("-inf")).scatter(1, sorted_indices, sorted_logits)
-                next_token = torch.multinomial(torch.softmax(logits, dim=-1), num_samples=1)
+                    _logits = torch.full_like(_logits, float("-inf")).scatter(1, sorted_indices, sorted_logits)
+                return torch.multinomial(torch.softmax(_logits, dim=-1), num_samples=1)
             else:
-                next_token = torch.argmax(logits, dim=-1, keepdim=True)
-            
+                return torch.argmax(logits, dim=-1, keepdim=True)
+
+        for _ in range(max_new_tokens):
+            logits = outputs.logits[:, -1, :]
+
+            # Repetition penalty（简单版）
+            if repetition_penalty and repetition_penalty != 1.0 and generated_ids:
+                uniq = list(set(generated_ids))
+                logits[:, uniq] = logits[:, uniq] / repetition_penalty
+
+            # 取本步 h_ctx（最后一层、最后一个 token）
+            last_hidden = outputs.hidden_states[-1][:, -1, :].detach()  # [1, H]
+            h_ctx_step = last_hidden[0]                                  # [H]
+
+            # 先出一个候选 token
+            next_token = _apply_sampling(logits)
             next_id = int(next_token.item())
-            
+
             if next_id == self.mol_token_id:
-                # 获取当前完整的上下文
-                current_context_ids = torch.cat([input_ids, torch.tensor([generated_ids], device=dev)], dim=1)
-                llm_context_text = self.tokenizer.decode(current_context_ids[0].tolist(), skip_special_tokens=True)
-                
-                # ★ 调用新的黑盒函数
-                mol_embedding = self._black_box_embed_online(llm_context_text)
-                
-                outputs = llm(
-                    inputs_embeds=mol_embedding.view(1, 1, -1),
-                    attention_mask=torch.cat([attn_mask, torch.ones(1, 1, device=dev)], dim=1),
-                    past_key_values=past,
-                    use_cache=use_cache,
-                    return_dict=True,
-                    **kwargs,
+                # 构造 llm_context_text（不含将要输出的 token）
+                current_context_ids = torch.cat(
+                    [input_ids, torch.tensor([generated_ids], device=dev, dtype=input_ids.dtype)],
+                    dim=1
                 )
-                past = outputs.past_key_values
-                attn_mask = torch.cat([attn_mask, torch.ones(1, 1, device=dev, dtype=attn_mask.dtype)], dim=1)
-                continue
-            
-            step_ids = next_token
-            attn_mask = torch.cat([attn_mask, torch.ones(1, 1, device=dev, dtype=attn_mask.dtype)], dim=1)
-            
+                llm_context_text = self.tokenizer.decode(
+                    current_context_ids[0].tolist(), skip_special_tokens=True
+                )
+
+                # 优先：用文本解析 SMILES；否则用 h_ctx 走 diffusion→解析
+                mol_embedding = self._black_box_embed_online(
+                    llm_context_text=llm_context_text,
+                    context_ids=None,
+                    h_ctx=h_ctx_step,
+                )
+
+                if mol_embedding is None:
+                    # 不插虚拟步：屏蔽 <mol> 并重采样
+                    logits_block = logits.clone()
+                    logits_block[0, self.mol_token_id] = float("-inf")
+                    next_token = _apply_sampling(logits_block)
+                    next_id = int(next_token.item())
+                else:
+                    # 插入虚拟步：推进 KV / attn，不计入输出
+                    outputs = llm(
+                        inputs_embeds=mol_embedding.view(1, 1, -1),
+                        attention_mask=torch.cat(
+                            [attn_mask, torch.ones(1, 1, device=dev, dtype=attn_mask.dtype)], dim=1
+                        ),
+                        past_key_values=past,
+                        use_cache=use_cache,
+                        output_hidden_states=True,
+                        return_dict=True,
+                        **kwargs,
+                    )
+                    past = outputs.past_key_values
+                    attn_mask = torch.cat(
+                        [attn_mask, torch.ones(1, 1, device=dev, dtype=attn_mask.dtype)], dim=1
+                    )
+                    # 继续下一轮预测（不把 <mol> 计入输出）
+                    continue
+
+            # 正常 token 前进一步：推进 KV、记录输出
+            step_ids = next_token  # [1, 1]
+            attn_mask = torch.cat(
+                [attn_mask, torch.ones(1, 1, device=dev, dtype=attn_mask.dtype)], dim=1
+            )
             outputs = llm(
                 input_ids=step_ids,
                 attention_mask=attn_mask,
                 past_key_values=past,
                 use_cache=use_cache,
+                output_hidden_states=True,
                 return_dict=True,
                 **kwargs,
             )
             past = outputs.past_key_values
             generated_ids.append(next_id)
-            
+
             if end_id is not None and next_id == end_id:
                 break
-                
+
         if not generated_ids:
             return input_ids
 
         gen = torch.tensor([generated_ids], device=dev, dtype=input_ids.dtype)
         return torch.cat([input_ids, gen], dim=1)
 
+   
     # --- 省略其他与你原脚本相同的代码 ---
     @property
     def config(self):
