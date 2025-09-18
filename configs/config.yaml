@@ -2,7 +2,7 @@ seed: 42
 
 paths:
   llm_name_or_path: "/data1/lvchangwei/LLM/llama3.2-chem-pretrain/llama3-instruct-pretrain-checkpoints/30w" 
-  output_dir: "/data1/chenyuxuan/Project/MSMLM/model/llama3.2-chem-sft-gnn/llm_gnn_nofreeze"
+  output_dir: "/data1/chenyuxuan/Project/MSMLM/model/llama3.2-chem-sft-gnn/llm_gnn_nofreeze2"
   # 统一使用更清晰的命名，直接指向权重文件
   gnn_state_dict_path: "/data1/lvchangwei/GNN/Project/GVP/checkpoints_256_wo/gvp_weights_best.pt"
   # 我们之前的讨论中，mlp适配器是随训练的，如果需要预加载，可以添加：
@@ -20,7 +20,7 @@ train:
   gradient_accumulation_steps: 8
   learning_rate: 2e-5
   num_train_epochs: 1
-  logging_steps: 10
+  logging_steps: 100
   save_steps: 1000
   eval_steps: 1000
   warmup_ratio: 0.03
@@ -28,6 +28,9 @@ train:
   gradient_checkpointing: true
   packing: false
   lr_scheduler_type: "cosine"
+  max_retries: 3
+  retry_backoff_sec: 30
+  save_total_limit: 3
   
   # ★ 新增：控制模型部分的冻结
   freeze_llm: false # 冻结LLM本体，一般为false

@@ -12,6 +12,10 @@ from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
 from modules.mol_aware_lm_simple import MolAwareCausalLM
 import swanlab
 import pdb
+import re, time, glob
+from typing import Optional
+from datetime import timedelta
+
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # ---------------- SwanLab ----------------
@@ -19,6 +23,16 @@ swanlab.init(project="mol-sft-simple", experiment_name="exp-001", description="S
 
 import json
 
+class BarrierCallback(TrainerCallback):
+    def on_save(self, args, state, control, **kwargs):
+        safe_barrier()  
+    def on_evaluate(self, args, state, control, **kwargs):
+        safe_barrier()
+    def on_train_begin(self, args, state, control, **kwargs):
+        safe_barrier()
+    def on_train_end(self, args, state, control, **kwargs):
+        safe_barrier()
+        
 def safe_to_str(x):
     if x is None:
         return ""
@@ -53,6 +67,41 @@ def set_seed(seed):
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
+        
+def _is_complete_checkpoint(path: str) -> bool:
+    """判断 checkpoint 是否完整（存在 state 与权重文件之一）"""
+    if not os.path.isdir(path):
+        return False
+    has_state = os.path.exists(os.path.join(path, "trainer_state.json"))
+    # 兼容 HF 多种保存格式
+    has_model = (
+        os.path.exists(os.path.join(path, "model.safetensors")) or
+        os.path.exists(os.path.join(path, "pytorch_model.bin")) or
+        os.path.exists(os.path.join(path, "pytorch_model.bin.index.json"))
+    )
+    return has_state and has_model
+
+def _list_checkpoints(output_dir: str):
+    cks = []
+    for p in glob.glob(os.path.join(output_dir, "checkpoint-*")):
+        m = re.search(r"checkpoint-(\d+)$", p)
+        if m and _is_complete_checkpoint(p):
+            step = int(m.group(1))
+            cks.append((step, p))
+    cks.sort(key=lambda x: x[0])
+    return [p for _, p in cks]
+
+def latest_checkpoint(output_dir: str) -> Optional[str]:
+    cks = _list_checkpoints(output_dir)
+    return cks[-1] if cks else None
+
+def safe_barrier():
+    try:
+        if dist.is_available() and dist.is_initialized():
+            dist.barrier()
+    except Exception:
+        pass
+
 
 # ---------------- Main (DDP spawn) ----------------
 def main_worker(world_size, cfg):
@@ -173,30 +222,13 @@ def main_worker(world_size, cfg):
         user = safe_to_str(example.get("input", "")).strip()
         assistant = safe_to_str(example.get("output", "")).strip()
         return {"text": f"<|user|>{user}\n<|assistant|>{assistant}"}
-
     processed_dataset = raw.map(format_dataset, remove_columns=raw.column_names)
-    processed_dataset = processed_dataset.filter(lambda ex: isinstance(ex.get("text",""), str) 
-                                            and len(ex["text"].strip())>0 
-                                            and "<|assistant|>" in ex["text"])
     # 过滤掉异常/空文本与超短样本
     def is_valid(example):
         t = example.get("text", "")
         return isinstance(t, str) and len(t.strip()) > 0 and "<|assistant|>" in t
 
     processed_dataset = processed_dataset.filter(is_valid)
-
-    # （可选）在小批样本上做一次“预 tokenization 检查”来提前暴露问题
-    def quick_tokenize_check(batch):
-        # 不写入数据集，仅用于 sanity check
-        _ = tokenizer(
-            batch["text"],
-            truncation=True,
-            max_length=int(cfg["train"]["max_seq_length"]),
-            padding=False,  # 这里只是检查，不需要 pad
-            return_attention_mask=True,
-        )
-        return batch
-    processed_dataset = processed_dataset.map(quick_tokenize_check, batched=True, batch_size=64)
 
     split = processed_dataset.train_test_split(test_size=0.05, seed=cfg["seed"])
 
@@ -225,7 +257,9 @@ def main_worker(world_size, cfg):
         remove_unused_columns=True,
         ddp_find_unused_parameters=True,
         report_to="none",
-        optim="paged_adamw_8bit"
+        optim="paged_adamw_8bit",
+        
+        ddp_bucket_cap_mb = 25,
     )
 
     if cfg["train"]["gradient_checkpointing"]:
@@ -241,12 +275,59 @@ def main_worker(world_size, cfg):
         max_seq_length=int(cfg["train"]["max_seq_length"]),
         packing=cfg["train"]["packing"],
         data_collator=data_collator,
-        callbacks=[SwanLabCallback(), CopyConfigCallback()],
+        callbacks=[BarrierCallback(), SwanLabCallback(), CopyConfigCallback()]
     )
 
-    trainer.train()
+    # --- 断点重试配置 ---
+    max_retries = int(cfg["train"].get("max_retries", 3))
+    backoff_base = int(cfg["train"].get("retry_backoff_sec", 30))  # 第一次 30s，随后 60s、90s...
+
+    # 启动时若已有 checkpoint，则从最新点恢复
+    resume_ckpt = latest_checkpoint(cfg["paths"]["output_dir"])
+
     if trainer.is_world_process_zero():
-        trainer.save_model(cfg["paths"]["output_dir"])
+        print(f"[{local_rank}] Resume from checkpoint: {resume_ckpt}")
+
+    for attempt in range(1, max_retries + 1):
+        try:
+            trainer.train(resume_from_checkpoint=resume_ckpt)
+            # 成功则保存最终权重并跳出
+            if trainer.is_world_process_zero():
+                trainer.save_model(cfg["paths"]["output_dir"])
+            break
+        except Exception as e:
+            # 打印错误并准备重试
+            msg = repr(e)
+            if trainer.is_world_process_zero():
+                print(f"[{local_rank}] ❌ Train failed (attempt {attempt}/{max_retries}): {msg}")
+
+            # 典型错误可提示一下（可选）
+            if any(k in msg for k in ["CUDA out of memory", "CUBLAS", "CUDNN"]):
+                if trainer.is_world_process_zero():
+                    print(f"[{local_rank}] Hint: OOM/显存问题，可考虑减小 per_device_train_batch_size 或开启梯度累积。")
+
+            # 清理 + 同步
+            try:
+                torch.cuda.empty_cache()
+            except Exception:
+                pass
+            safe_barrier()
+
+            # 到此若达到最大重试次数，抛出错误
+            if attempt == max_retries:
+                raise
+
+            # 指数回退等待
+            wait_s = backoff_base * attempt
+            if trainer.is_world_process_zero():
+                print(f"[{local_rank}] ⏳ Waiting {wait_s}s before retry ...")
+            time.sleep(wait_s)
+
+            # 期间可能已经产生新的 ckpt，重设恢复点
+            resume_ckpt = latest_checkpoint(cfg["paths"]["output_dir"])
+            if trainer.is_world_process_zero():
+                print(f"[{local_rank}] ↩️  Next resume checkpoint: {resume_ckpt}")
+
 
 def main(cfg_path="configs/config.yaml"):
     with open(cfg_path, "r") as f:
