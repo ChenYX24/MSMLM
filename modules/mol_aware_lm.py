@@ -10,7 +10,6 @@ import logging
 from transformers import AutoModelForCausalLM, AutoConfig
 from transformers.modeling_outputs import CausalLMOutputWithPast
 
-# 你的工程内模块
 from .gnn import GVPEncoder
 from .mlp import MLPAdapter, DiffusionAdapter
 from .tools import extract_and_convert_online
@@ -24,6 +23,28 @@ logging.getLogger("rdkit").setLevel(logging.ERROR)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 import torch.distributed as dist
+import os, glob
+
+def has_hf_model_files(d: str) -> bool:
+    if not os.path.isdir(d):
+        return False
+    # 单文件 / 索引文件
+    names = [
+        "model.safetensors",
+        "pytorch_model.bin",
+        "model.safetensors.index.json",
+        "pytorch_model.bin.index.json",
+        "flax_model.msgpack",
+        "tf_model.h5",
+    ]
+    if any(os.path.isfile(os.path.join(d, n)) for n in names):
+        return True
+    # 分片文件（无论是否有 index，都当作“该目录包含权重”）
+    if glob.glob(os.path.join(d, "model-*-of-*.safetensors")):
+        return True
+    if glob.glob(os.path.join(d, "pytorch_model-*-of-*.bin")):
+        return True
+    return False
 
 def any_rank_true(flag: bool) -> bool:
     """只要有一个 rank 为 True，就让所有 rank 都为 True。"""
@@ -681,69 +702,59 @@ class MolAwareCausalLM(nn.Module):
         return out
 
     @classmethod
-    def from_pretrained(
-        cls,
-        save_directory: str,
-        tokenizer,
-        diffusion_config: Optional[Dict] = None,
-        diffusion_adapter_config: Optional[Dict] = None,
-        gvp_encoder_config: Optional[Dict] = None,
-        mol_adapter_config: Optional[Dict] = None,
-        **kwargs,
-    ):
-        """
-        从目录加载：
-          1) AutoModelForCausalLM.from_pretrained() 加载底座 LLM
-          2) 构造 MolAwareCausalLM
-          3) 调用 load_extra_modules() 恢复自定义模块
-        """
-        base_llm = AutoModelForCausalLM.from_pretrained(save_directory, **kwargs)
-        inst = cls(
-            llm=base_llm,
-            tokenizer=tokenizer,
-            mol_token="<mol>",
-            gvp_encoder_config=gvp_encoder_config,
-            mol_adapter_config=mol_adapter_config,
-            diffusion_config=diffusion_config,
-            diffusion_adapter_config=diffusion_adapter_config,
-        )
-        inst.load_extra_modules(save_directory)
-        return inst
+    def from_pretrained(cls, save_directory: str, tokenizer=None,
+                        diffusion_config=None, diffusion_adapter_config=None,
+                        **kwargs):
+        root = save_directory
+        meta_path = os.path.join(root, "molaware_metadata.json")
+        has_meta = os.path.isfile(meta_path)
 
-    def load_extra_modules(self, save_directory: str):
-        """从保存目录恢复 gvp_encoder / mol_adapter / diffusion_adapter"""
-        meta_path = os.path.join(save_directory, "molaware_metadata.json")
-        if not os.path.isfile(meta_path):
-            logging.info("No molaware_metadata.json found; skip loading extra modules.")
-            return
-        try:
+        # 1) 解析 metadata（若存在）
+        meta = {}
+        extras_map = {}
+        if has_meta:
             with open(meta_path, "r", encoding="utf-8") as f:
                 meta = json.load(f)
-        except Exception as e:
-            logging.warning(f"Failed to read molaware_metadata.json: {e}")
-            return
-        extras: Dict[str, str] = meta.get("extras", {})
-        dev = self._first_device()
+            extras_map = meta.get("extras", {}) or {}
 
-        def _load_one(name: str, module: nn.Module):
-            fname = extras.get(name)
-            if not fname:
+        # 2) 决定 LLM 目录：优先 <root>/llm，其次 <root>
+        llm_dir = os.path.join(root, "llm")
+        if not has_hf_model_files(llm_dir):
+            llm_dir = root
+        print(f"[from_pretrained] using llm_dir={llm_dir}")
+
+        # 3) 加载底座 LLM
+        base_llm = AutoModelForCausalLM.from_pretrained(llm_dir, **kwargs)
+
+        # 4) tokenizer：若未传入，则用根目录（因为 tokenizer 保存在根）
+        if tokenizer is None:
+            tokenizer = AutoTokenizer.from_pretrained(root, use_fast=True)
+
+        # 5) 构造实例
+        model = cls(llm=base_llm, tokenizer=tokenizer,
+                    diffusion_config=diffusion_config,
+                    diffusion_adapter_config=diffusion_adapter_config)
+
+        # 6) 加载 extras（按 metadata 的相对路径）
+        def _maybe_load_sub(sd_path, module_attr):
+            if not sd_path:
                 return
-            fpath = os.path.join(save_directory, fname)
-            if os.path.isfile(fpath) and module is not None:
-                sd = torch.load(fpath, map_location=dev)
-                try:
-                    module.load_state_dict(sd, strict=True)
-                    logging.info(f"Loaded extra module: {name} from {fname}")
-                except Exception as e:
-                    logging.warning(f"Failed to load {name} from {fname}: {e}")
+            path = os.path.join(root, sd_path) if not os.path.isabs(sd_path) else sd_path
+            if os.path.isfile(path):
+                sd = torch.load(path, map_location="cpu")
+                mod = getattr(model, module_attr, None)
+                if mod is not None and hasattr(mod, "load_state_dict"):
+                    # 兼容直接存 state_dict（keys 裸的）或者带前缀；使用 strict=False 更韧性
+                    mod.load_state_dict(sd, strict=False)
 
-        if hasattr(self, "gvp_encoder"):
-            _load_one("gvp_encoder", self.gvp_encoder)
-        if hasattr(self, "mol_adapter"):
-            _load_one("mol_adapter", self.mol_adapter)
-        if hasattr(self, "diffusion_adapter"):
-            _load_one("diffusion_adapter", self.diffusion_adapter)
+        if has_meta:
+            _maybe_load_sub(extras_map.get("gvp_encoder"), "gvp_encoder")
+            _maybe_load_sub(extras_map.get("mol_adapter"), "mol_adapter")
+            _maybe_load_sub(extras_map.get("diffusion_adapter"), "diffusion_adapter")
+            _maybe_load_sub(extras_map.get("diffusion"), "diffusion")  # 只有你真的保存了 diffusion.pt 才会有
+
+        return model
+
 
     # --------------------------- 其它辅助 ---------------------------
     def gradient_checkpointing_enable(self, *args, **kwargs):

@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from modules.mol_aware_lm_simple import MolAwareCausalLM
+from MSMLM.code.modules.mol_aware_lm import MolAwareCausalLM
 import torch.nn.functional as F
 from tqdm import tqdm
 import random

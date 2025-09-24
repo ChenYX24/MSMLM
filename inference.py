@@ -6,7 +6,7 @@ import yaml
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
 
-from modules.mol_aware_lm_simple import MolAwareCausalLM
+from MSMLM.code.modules.mol_aware_lm import MolAwareCausalLM
 from transformers.generation import LogitsProcessorList
 from transformers.generation.logits_process import LogitsProcessor
 

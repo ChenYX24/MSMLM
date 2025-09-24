@@ -1,7 +1,7 @@
 seed: 42
 
 paths:
-  llm_name_or_path: "/data1/lvchangwei/LLM/llama3.2-chem-pretrain/llama3-instruct-pretrain-checkpoints/30w" 
+  llm_name_or_path: "/data1/lvchangwei/LLM/llama3.2-cpt/llama3.2-instruct-cptv1/v9-20250919-113647/checkpoint-185" 
   output_dir: "/data1/chenyuxuan/Project/MSMLM/model/llama3.2-chem-sft-gnn/llm_gnn_nofreeze2"
   # 统一使用更清晰的命名，直接指向权重文件
   gnn_state_dict_path: "/data1/lvchangwei/GNN/Project/GVP/checkpoints_256_wo/gvp_weights_best.pt"

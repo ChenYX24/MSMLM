@@ -1,0 +1,34 @@
+[
+    {
+        "input": "Synthesize a molecule that matches the given characteristics. The molecule is a natural product found in Talaromyces pinophilus, Talaromyces aculeatus, and Aspergillus with data available.",
+        "output": "the question is Synthesize a molecule that matches the given characteristics. The molecule is a natural product found in Talaromyces pinophilus, Talaromyces aculeatus, and Aspergillus with data available. <mol> the answer is C/C=C/C1=CC2=CC(=O)[C@@]([C@H1]([C@@H1]2CO1)OC(=O)C3=C(C=C(C=C3C)O)O)(C)O",
+        "metadata": {
+            "task": "description-guided molecule design",
+            "split": "train"
+        }
+    },
+    {
+        "input": "With the provided reactants and reagents, propose a potential product. CNOC.O=C(O)CC1=CC=C(C2=CC=CC=C2)C=C1.CCN(CC)CC.CCN=C=NCCCN(C)C.Cl.Cl.ClCCl.OC3=CC=CC=4[NH1]N=NC3=4",
+        "output": "the question is With the provided reactants and reagents, propose a potential product. CNOC<mol>.O=C(O)CC1=CC=C(C2=CC=CC=C2)C=C1<mol>.CCN(CC)CC<mol>.CCN=C=NCCCN(C)C<mol>.Cl<mol>.Cl<mol>.ClCCl<mol>.OC3=CC=CC=4[NH1]N=NC3=4<mol>,the answer is CON(C)C(=O)CC1=CC=C(C2=CC=CC=C2)C=C1",
+        "metadata": {
+            "task": "forward reaction prediction",
+            "split": "train"
+        }
+    },
+    {
+        "input": "Provided the molecule with the SMILES CC1N2CC1(C2)N1CC1 below, what are some of its quantum chemical properties?",
+        "output": "the question is Provided the molecule with the SMILES CC1N2CC1(C2)N1CC1 below, what are some of its quantum chemical properties? <mol> the answer is mu: 1.8724, homo: -0.227, lumo: 0.0795, gap: 0.3065",
+        "metadata": {
+            "task": "qm9_property_query",
+            "split": "sft"
+        }
+    },
+    {
+        "input": "Can you tell me more about the matchups between SEC and ACC teams in the Sweet 16? Who do you think will come out on top?",
+        "output": "the question is Can you tell me more about the matchups between SEC and ACC teams in the Sweet 16? Who do you think will come out on top? , the answer is Sure, let me provide you with some information about the matchups and some analysis of each game.  1) Kentucky vs Houston: This matchup features two very talented and athletic teams. Kentucky, however, may be without one of their star players, PJ Washington, who is dealing with a foot injury. If Washington is not able to play, it could be difficult for Kentucky to match up with Houston's frontcourt, which includes 6'8\" senior Breaon Brady and 6'9\" junior Fabian White Jr. Both players have been consistently productive for Houston throughout the season. Kentucky will need strong performances from their guards, led by Tyler Herro and Ashton Hagans, to offset any potential issues in the frontcourt. Overall, this game could be very closely contested, but Kentucky has a slightly better track record in the tournament and may have the edge.  2) Auburn vs North Carolina: This game features a high-scoring Auburn team going up against one of the most talented teams in the country in North Carolina. Auburn has been on a roll lately, with impressive wins over Kansas and New Mexico State in the first two rounds of the tournament. North Carolina, on the other hand, has been a consistent force throughout the season and boasts a very deep and talented roster. If Auburn can continue to shoot the ball well from the perimeter, they can certainly pull off the upset. However, North Carolina's superior frontcourt, led by Luke Maye and Nassir Little, could pose some problems for Auburn. North Carolina should be considered the favorites in this game.  3) LSU vs Michigan State: LSU has been one of the most surprising teams in the tournament, winning their first two games in nail-biting fashion. Michigan State, on the other hand, has been one of the most consistently excellent teams in the country all season long. Michigan State boasts a deep and experienced roster led by point guard Cassius Winston, who has been one of the best players in the country this season. LSU will need to rely on their two talented guards, Tremont Waters and Skylar Mays, to match up with Michigan State's backcourt. However, the balance and depth of Michigan State's roster should give them the edge in this game.  4) Virginia Tech vs Duke: This game features two ACC teams who are very familiar with each other. Duke won the first matchup between these two teams earlier this season, but both teams were missing key players in that game (Zion Williamson for Duke, Justin Robinson for Virginia Tech). This time around, both teams will be at full strength. Duke, of course, has one of the most talented teams in the country, led by Zion Williamson, and should be considered the favorites in this game. However, Virginia Tech is a well-coached team with a strong defense and could certainly give Duke some problems. The key for Virginia Tech will be if they can get enough production from their other players beyond star guard Nickeil Alexander-Walker.  It's difficult to predict which teams will come out on top in these matchups, as all four games could be closely contested. However, based on recent performance and overall talent, Kentucky, North Carolina, Michigan State, and Duke should be considered the favorites in their respective games.",
+        "metadata": {
+            "task": "general",
+            "split": "train"
+        }
+    }
+]
